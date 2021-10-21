@@ -4,12 +4,17 @@ public class Player_Manager : MonoBehaviour
 {
     [SerializeField] Camera mainCamera;
     [SerializeField] AnimationManager animationManager;
+    [SerializeField] GunController gunController;
     [Header("Movement")]
     [SerializeField] float moveSpeed;
 
     Rigidbody rb;
-    Vector3 moveInput;
     Vector3 moveVelocity;
+
+    //Inputs
+    Vector3 moveInput;
+    bool shootButtonDown;
+    bool shootButtonUp;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -19,6 +24,7 @@ public class Player_Manager : MonoBehaviour
     {
         HandleInputs();
         HandleLooking();
+        HandleShooting();
         HandleAnimations();
     }
 
@@ -29,7 +35,8 @@ public class Player_Manager : MonoBehaviour
     void HandleInputs()
     {
         moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-        
+        shootButtonDown = Input.GetMouseButtonDown(0);
+        shootButtonUp = Input.GetMouseButtonUp(0);
     }
 
     void HandleMovement()
@@ -52,9 +59,22 @@ public class Player_Manager : MonoBehaviour
         }
     }
 
+    void HandleShooting()
+    {
+        if (shootButtonDown)
+        {
+            gunController.isFiring = true;
+            
+        }
+        else if(shootButtonUp)
+        {
+            gunController.isFiring = false;
+        }
+    }
     void HandleAnimations()
     {
         animationManager.SetSpeed(moveInput.magnitude);
+        animationManager.SetIsFiring(gunController.isFiring);
     }
 
 }
